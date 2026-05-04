@@ -1,6 +1,8 @@
 # Course site plan — `/learn`
 
-Working spec for the lesson section of the Fretboard Tutor app. Lives inside the existing Next.js app at `/learn`. Original content; CAGED Clarity 2.0 used as conceptual reference only — no quoting, no diagram tracing.
+> **Note (May 2026):** the app is being restructured to two top-level sections, **Learn** and **Test**. Tutor folds into Learn as a slide-over panel. `/quiz` becomes `/test` with click-the-fret interaction and customization. `/progress` and standalone `/tutor` are removed. The structural plan lives at `~/.claude/plans/i-want-to-take-jaunty-dream.md`. Curriculum below is unchanged.
+
+Working spec for the lesson section of the Fretboard Tutor app. Lives inside the existing Next.js app at `/learn`. Original content; reference sources (Ry Naylor / CAGED Clarity / musictheory.net / fretjam) are interaction & pedagogy reference only — no quoting, no diagram tracing, no code lifting.
 
 ## Scope (v1)
 
@@ -36,9 +38,13 @@ Total: 9 lessons. Plus one "Welcome to the practice room" intro lesson at `/lear
 ## Routes
 
 ```
-/learn               — overview: 3 weeks, 10 lessons, completion rings
-/learn/[slug]        — single lesson page, 3-min read, embedded fretboard,
-                       "Drill it" button to /quiz?strings=… at the bottom
+/learn               — TOC (3 weeks, 10 lessons, completion rings) on the left,
+                       welcome content on the right, Tutor panel triggered top-right
+/learn/[slug]        — same shell; lesson content on the right, embedded fretboard,
+                       inline scoped <FretboardTest> at the bottom (no customization),
+                       "Open full test" link to /test?preset=lesson:<slug>
+/test                — full Test page: customizable click-the-fret drill
+                       (strings, fret range, naturals/sharps), persisted prefs
 ```
 
 Slugs: `welcome`, `w1-roots`, `w1-anchors`, `w1-octaves`, `w2-crosscheck`, `w2-string3`, `w2-octave-map`, `w3-finishing`, `w3-naming`, `w3-gate-test`.
@@ -64,12 +70,9 @@ Simple, no streak-gating:
 
 Rationale: the curriculum is already gated by week; lessons should mirror it. Avoids a separate progress system.
 
-## Lesson → quiz integration
+## Lesson → test integration
 
-Each lesson ends with a single brass capsule button: **Drill it →**. Clicking:
-1. Marks the lesson complete
-2. Routes to `/quiz?strings=6,5&fromLesson=w1-roots` (strings vary by lesson)
-3. After the quiz session, the post-session screen offers "Back to lesson" if `fromLesson` was set
+Each lesson ends with an **inline `<FretboardTest>`** scoped to the lesson's strings/frets, with no customization controls. Below it, a brass capsule link: **Open full test →** routes to `/test?preset=lesson:w1-roots`. Marking the lesson complete happens when the user lands ≥10 answers in the inline test (same streak rule as the standalone `/test`).
 
 **Streak credit:** lesson completion alone does not extend the streak. Only quiz sessions do (existing `total >= 10` rule). This keeps "did the work" the bar, not "read the doc." Avi's preference: "honest assessments preferred over reassurance" — reading without drilling shouldn't fake progress.
 

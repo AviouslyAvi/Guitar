@@ -26,7 +26,7 @@ Desktop launcher: `~/Desktop/Fretboard Tutor.command` kills `:3000`, runs `pnpm 
 
 ## Current State
 
-Routes:
+Routes (current — being restructured to two sections, see "Restructure In Flight" below):
 
 - `/` — public landing, CTA to `/app`
 - `/app` — hub with Learn, Quiz, Tutor, Settings capsules
@@ -175,12 +175,63 @@ rtk pnpm dev
    - adjacent-string unison shift is 5 frets back, except 3→2 is 4 frets back
 9. Old localStorage lesson slugs from prior CAGED course may exist. Unlock logic ignores unknown slugs. No migration needed.
 
+## Restructure In Flight — Learn + Test (May 2026)
+
+The app is being collapsed from five sections to two:
+
+- **Learn** (`/learn`) — TOC on the left (Week 1/2/3 groups, completion rings), lesson content on the right, **Tutor** as a right-side slide-over panel triggered by a top-right button. Each lesson ends with an inline test scoped to the lesson (no customization controls in Learn).
+- **Test** (`/test`) — replaces `/quiz`. Click-the-fret interaction (interaction model only — no code copied from musictheory.net). Customizable: strings, fret range, naturals/sharps. Persists preferences to localStorage. From-lesson entries hide the customization panel and lock scope.
+
+Removed routes: standalone `/tutor`, standalone `/progress`. `/quiz` redirects to `/test` for one release, then drops.
+
+Plan file (canonical for this work): `~/.claude/plans/i-want-to-take-jaunty-dream.md`.
+
+### Build order (one chat per step recommended)
+
+1. `<LearnToc>` + two-column `/learn` shell
+2. `<TutorPanel>` slide-over wrapping current tutor chat
+3. `<FretboardTest>` extracted from quiz logic, scope-prop-driven
+4. `/test` page with settings + persisted prefs
+5. Embed `<FretboardTest>` inline at bottom of each lesson, scope locked
+6. Hub capsule list pruned; `/quiz`, `/tutor`, `/progress` removed/redirected
+7. Manual desktop walkthrough → defer mobile polish
+
+### Token-saving rules for this restructure
+
+- One session per build step; commit between steps so the next chat starts clean.
+- Use the `Explore` subagent for read-heavy steps (3, 7).
+- Don't open `src/lib/ai.ts` (10 KB) unless the step touches AI.
+- Keep `BRIEF.md`, `COURSE-PLAN.md`, this file, and the plan file pinned — re-reading them is cheaper than re-explaining.
+- Sonnet 4.6 / Haiku 4.5 are fine for prose passes and small UI tweaks. Reserve Opus for steps 1, 3, 4.
+
+## Lesson copy is collaborative — DO NOT rewrite unilaterally
+
+Avi writes the 10 lesson bodies in `src/lib/lessons.ts` himself, in his voice, one focused chat per lesson (or per week). Structural sessions MUST leave `body` content alone unless explicitly told otherwise. When the lesson-copy phase begins, the workflow is:
+
+1. Open one chat per lesson (or per week if grouping is faster).
+2. Read the existing entry in `lessons.ts`.
+3. Propose a revision grounded in the pedagogy notes in the plan file (anchor notes, octave shapes, 15-min daily protocol, naturals-first, descend-as-well-as-ascend, say notes aloud).
+4. Avi edits in chat. Final copy lands in `lessons.ts`. No silent rewrites.
+
+## Reference material — interaction & pedagogy only
+
+The Test interaction model is informed by **musictheory.net/exercises/fretboard**. Pedagogy is informed by **fretjam.com**, TrueFire, Pickup Music, Guitar Nutrition, Riffhard, Guyker, the Ry Naylor *Fretboard Mastery* ebook (on disk in the project root), and an Andrey Lushnikov mnemonic post.
+
+**Build-phase rule:** dev sessions MAY open these pages to verify behavior. They MUST NOT copy code, copy phrasing, or trace diagrams. Anything visual is original; anything textual is Avi's prose.
+
 ## Next Good Threads
 
-1. Lesson copy pass in Avi’s voice.
-2. Add the 11 diagram images.
-3. Visual polish pass on the new course path after Avi clicks around.
-4. Phase 3 deploy: Vercel + custom domain.
+1. Build step 1 of the restructure: `<LearnToc>` + two-column `/learn` shell.
+2. Lesson copy pass in Avi's voice (collaborative — see above).
+3. Add the 11 diagram images.
+4. Visual polish pass after Avi clicks around the new shell.
+5. Phase 3 deploy: Vercel + custom domain.
+
+## Open Decisions (no action — surface before they bite)
+
+- **App rename.** Folder `fretboard-tutor` and "Fretboard Tutor" copy become misleading once the planned `/piano` namespace lands (companion plan: `~/.claude/plans/i-have-been-working-delegated-riddle.md`). Candidates: "Avious Tutor" (matches parent folder `/Avious Music/`), "Music Tutor", or keep slug + change display strings only. Defer until piano deploy phase at the latest. Don't surprise yourself mid-piano-build.
+- **`appliedTune` field on lessons.** Piano plan links each day to a YouTube ID for applied practice. Guitar lessons currently don't. Worth adding `appliedTune?: { title; artist; youtubeId? }` to the lesson schema during the **lesson-copy phase** with Avi — not during the structural restructure. Phrase it as: "what's a real song that uses this fret/string/concept that you'd actually want to practice along to?"
+- **Forward-compat for piano (locked in).** Generic naming and topic-namespaced storage keys are now mandatory in Wave 1–3 of the restructure (see `handoffs/README.md` rule 9). This decision is made; listed here only so future you remembers why `lib/drill-engine.ts` isn't called `lib/quiz-engine.ts`.
 
 ## Avi Preferences
 

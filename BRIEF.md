@@ -10,11 +10,12 @@ Reach the point where I can name every landing note while soloing. Concretely: p
 
 ## Approach
 
-A personal webapp built around three primitives:
+A personal webapp built around two primitives:
 
-1. **Drill** — piano-style note quiz scoped by string and fret range. The actual work.
-2. **Course** — 10 short lessons (≤3 min each) explaining the *why* behind each week's drills. Reading without drilling does not count toward the streak.
-3. **Tutor** — optional local-LLM chat for asking "where's the F# on string 4?" without leaving the app. Off by default.
+1. **Learn** — 10 short lessons (≤3 min each) explaining the *why* behind each week's drills. TOC on the left, content on the right. Each lesson ends with an inline test scoped to that lesson. An optional Tutor panel slides in from the right for asking "where's the F# on string 4?" without leaving the page; off by default. Reading lessons does not count toward the streak.
+2. **Test** — customizable click-the-fret note drill scoped by string, fret range, and accidentals. The actual work. Persists preferences to localStorage. Lesson-embedded tests are the same component with scope locked.
+
+Desktop-first. Mobile polish is a later pass.
 
 ## Constraints (chosen, not imposed)
 
@@ -22,7 +23,8 @@ A personal webapp built around three primitives:
 - **Works offline.** `LLM_PROVIDER=none` is the default. AI is a feature, not a dependency.
 - **One-tap entry.** Hub → drill in one click. No nested menus, no infinite scroll.
 - **Honest progress.** Skips and early stops don't pad accuracy. Streak credit gates at ≥10 answers per session. Reading lessons doesn't fake progress.
-- **Original content.** Course prose is mine. The Ry Naylor / CAGED Clarity material is conceptual reference only — no quoting, no diagram tracing.
+- **Original content.** Course prose is mine. Reference sources (Ry Naylor / CAGED Clarity / musictheory.net / fretjam / TrueFire / Pickup Music) are conceptual and interaction-model reference only — no quoting, no diagram tracing, no code lifting.
+- **Collaborative lesson writing.** Lesson bodies in `lessons.ts` are not rewritten unilaterally — Avi works each one with Claude in a focused chat.
 
 ## Curriculum shape
 
@@ -42,12 +44,15 @@ Next.js 15 App Router · TypeScript · Tailwind v4 · shadcn/ui · Vercel AI SDK
 
 Shipped: hub, drill, course path, lesson template, tutor, settings, progress. Quiz "I'm tired" recap with weakest-string drill. Course path with progressive unlock.
 
-Next threads, in order: lesson copy pass in my voice → 11 diagram images → polish pass → Vercel deploy.
+In flight: restructure to two sections (Learn + Test). Tutor folds into Learn as a slide-over panel. `/quiz` becomes `/test` with click-the-fret interaction and customization. `/progress` and standalone `/tutor` are removed; their data folds into Learn TOC + Test results.
+
+Next threads, in order: structural refactor (Learn TOC + Test page) → lesson copy pass with Avi → 11 diagram images → polish → Vercel deploy.
 
 ## Non-goals (for now)
 
 - Multi-user / accounts / cloud sync
 - Mobile apps (web works)
+- Mobile-first responsive polish (desktop-first; mobile is a later pass)
 - CAGED chord shapes, scales, arpeggios — separate plan after note fluency lands
 - Audio playback in lessons
 - Bookmarks, notes, search

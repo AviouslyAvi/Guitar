@@ -17,7 +17,12 @@ Personal fretboard-learning project. A single-user webapp for naming every note 
 
 Next.js 15 · TypeScript · Tailwind v4 · shadcn/ui · pnpm. localStorage only — no DB, no auth. Optional AI tutor via Vercel AI SDK (LM Studio, OpenAI, or Anthropic); defaults to `LLM_PROVIDER=none` so the app works fully offline.
 
-Routes: `/` landing · `/app` hub · `/learn` 3-week course · `/quiz` note drill · `/tutor` chat · `/settings` · `/progress`.
+Two sections:
+
+- **Learn** (`/learn`) — TOC on the left, lesson content on the right, Tutor as a slide-over panel from the top right. Each lesson ends with an inline test scoped to that lesson (no customization in Learn).
+- **Test** (`/test`) — customizable click-the-fret note drill (strings, fret range, naturals/sharps). Standalone, persisted preferences.
+
+Desktop-first; mobile is a later polish pass.
 
 ```bash
 cd app/fretboard-tutor
@@ -30,6 +35,12 @@ Desktop launcher: `~/Desktop/Fretboard Tutor.command` kills `:3000`, runs `pnpm 
 ## Course
 
 10 lessons across 3 weeks of note fluency — alphabet and open strings → reference points and sharps/flats → unisons, octaves, and full-neck integration. Lesson copy lives in `app/fretboard-tutor/src/lib/lessons.ts`. Curriculum data lives in `src/lib/curriculum.ts`.
+
+**Lesson copy is a collaborative pass.** Avi writes lesson bodies in his voice, one chat per lesson (or per week). Do not unilaterally rewrite `lessons.ts` body content during structural refactors.
+
+## Reference material — interaction & pedagogy only
+
+The Test section's interaction model is informed by [musictheory.net/exercises/fretboard](https://www.musictheory.net/exercises/fretboard). Pedagogical references include [fretjam.com](https://www.fretjam.com), TrueFire, Pickup Music, Guitar Nutrition, and the Ry Naylor *Fretboard Mastery* ebook on disk. **No code, copy, or diagrams are lifted from any source.** All UI is original; all prose is Avi's.
 
 ## Build scripts
 
