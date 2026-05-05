@@ -2,6 +2,8 @@
 
 Read this once, then resume in `app/fretboard-tutor/`.
 
+> **2026-05-05 — Worktree cleanup.** The folder `/Users/aviouslyavi/Claude/Guitar/` previously held 6 abandoned agent worktrees (`charming-northcutt-a04e02`, `gracious-mestorf-50ddeb`, `modest-dubinsky-062585`, `objective-rubin-617bdf`, `pedantic-bose-ffe9cb`, `trusting-sammet-94fd29`). All were clean (zero commits ahead of `main`, zero uncommitted changes, identical `handoffs/` contents). They were removed via `git worktree remove` and the parent dir deleted. No unique work was lost. The `claude/*` branches still exist locally — delete with `git branch -D claude/<name>` if no longer needed.
+
 ## What this is
 
 A personal fretboard-learning webapp for naming every guitar note. Single-user-per-browser via localStorage. Public-facing copy. No accounts, no DB, no paid APIs by default.
