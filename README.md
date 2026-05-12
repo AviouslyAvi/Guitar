@@ -1,51 +1,74 @@
-# Guitar
+# Guitar and Piano Tutor
 
-Personal fretboard-learning project. A single-user webapp for naming every note on the guitar neck, plus the supporting course content and build tooling.
+Personal music-fluency project. Two webapps — a **guitar fretboard tutor** and a **piano tutor** — plus the supporting course content, build scripts for printable PDF references, and a folder of UI mockup explorations.
+
+Single-user, local-first, no cloud. Built to fit the way Avi actually learns.
 
 ## What's here
 
 ```
-.
-├── app/fretboard-tutor/   # Next.js 15 webapp (the actual product)
-├── build-scripts/         # Python scripts that generate CAGED + notes PDFs
-├── BUILD-PROMPT.md        # Spec used to bootstrap the app
-├── COURSE-PLAN.md         # Working spec for the /learn section
-└── HANDOFF.md             # Session-to-session resume notes
+app/
+  fretboard-tutor/        # Next.js 15 webapp — guitar fretboard tutor (primary app)
+  fretboard-tutor-piano/  # Piano tutor (Next.js)
+build-scripts/            # Python scripts that generate printable PDFs
+handoffs/                 # Session-to-session resume docs
+mockups/                  # HTML design explorations for the Learn UI
+BRIEF.md                  # What and why
+BRAND.md                  # Brand / voice
+COURSE-PLAN.md            # Guitar curriculum spec
+PIANO-PLAN.md             # Piano curriculum spec (large — load only when relevant)
+HANDOFF.md                # Top-level resume doc
 ```
 
-## App: Fretboard Tutor
+## Apps
 
-Next.js 15 · TypeScript · Tailwind v4 · shadcn/ui · pnpm. localStorage only — no DB, no auth. Optional AI tutor via Vercel AI SDK (LM Studio, OpenAI, or Anthropic); defaults to `LLM_PROVIDER=none` so the app works fully offline.
+Both apps share the same stack: **Next.js 15 · TypeScript · Tailwind v4 · shadcn/ui · pnpm**. Desktop-first. `localStorage` only — no database, no auth, no cloud sync.
 
-Two sections:
+Optional AI tutor via Vercel AI SDK (LM Studio, OpenAI, or Anthropic). Defaults to `LLM_PROVIDER=none` so each app runs fully offline.
 
-- **Learn** (`/learn`) — TOC on the left, lesson content on the right, Tutor as a slide-over panel from the top right. Each lesson ends with an inline test scoped to that lesson (no customization in Learn).
-- **Test** (`/test`) — customizable click-the-fret note drill (strings, fret range, naturals/sharps). Standalone, persisted preferences.
+Each app has two sections:
 
-Desktop-first; mobile is a later polish pass.
+- **Learn** — table of contents + lesson view with an inline test at the end of each lesson.
+- **Test** — customizable drill (configurable scope, persisted preferences).
+
+## Run
 
 ```bash
-cd app/fretboard-tutor
+cd app/fretboard-tutor      # or app/fretboard-tutor-piano
 pnpm install
 pnpm dev
 ```
 
-Desktop launcher: `~/Desktop/Fretboard Tutor.command` kills `:3000`, runs `pnpm dev`, opens the browser.
-
-## Course
-
-10 lessons across 3 weeks of note fluency — alphabet and open strings → reference points and sharps/flats → unisons, octaves, and full-neck integration. Lesson copy lives in `app/fretboard-tutor/src/lib/lessons.ts`. Curriculum data lives in `src/lib/curriculum.ts`.
-
-**Lesson copy is a collaborative pass.** Avi writes lesson bodies in his voice, one chat per lesson (or per week). Do not unilaterally rewrite `lessons.ts` body content during structural refactors.
-
-## Reference material — interaction & pedagogy only
-
-The Test section's interaction model is informed by [musictheory.net/exercises/fretboard](https://www.musictheory.net/exercises/fretboard). Pedagogical references include [fretjam.com](https://www.fretjam.com), TrueFire, Pickup Music, Guitar Nutrition, and the Ry Naylor *Fretboard Mastery* ebook on disk. **No code, copy, or diagrams are lifted from any source.** All UI is original; all prose is Avi's.
+A desktop launcher (`~/Desktop/Fretboard Tutor.command`) kills port `:3000`, runs `pnpm dev`, and opens the browser.
 
 ## Build scripts
 
-`build-scripts/` generates printable PDFs (CAGED reference, one-page CAGED, 3-week notes worksheet). Run individually with Python 3.
+`build-scripts/` contains Python 3 scripts that generate printable PDFs (CAGED reference, one-page CAGED, 3-week notes worksheet). Run individually:
 
-## Resume / handoff
+```bash
+python3 build-scripts/build_caged_pdf.py
+```
 
-`HANDOFF.md` is the source of truth for session state, gotchas, and next threads. Read it first.
+Output PDFs land alongside the script or at the repo root (e.g. `Fretboard-Notes-3-Weeks.pdf`).
+
+## Requirements
+
+- Node 20+ and `pnpm` (for the webapps).
+- Python 3 with `reportlab` / `pdfplumber` (for the PDF build scripts).
+- macOS for the `.command` launcher (the webapps run anywhere Node does).
+
+## Course content
+
+Lesson copy lives in `app/fretboard-tutor/src/lib/lessons.ts`; curriculum data in `app/fretboard-tutor/src/lib/curriculum.ts`. **Lesson body copy is a collaborative pass** — Avi writes it in his own voice, one chat per lesson. Don't unilaterally rewrite `lessons.ts` body text during structural refactors.
+
+## Reference material — pedagogy only
+
+`Fretboard+Mastery+eBook+(2025).pdf` (Ry Naylor) and online sources (musictheory.net, fretjam, TrueFire, Pickup Music) inform interaction model and pedagogy only. **No code, copy, or diagrams are lifted from any source.** All UI is original; all prose is Avi's.
+
+## Status
+
+Active. Guitar app is the more mature of the two; piano app is being scaffolded against `PIANO-PLAN.md`. See `HANDOFF.md` for the live state of work.
+
+## For contributors / AI
+
+`CLAUDE.md` at the repo root is the router. Each subfolder has a `CONTEXT.md` with room-specific conventions. Start at `CLAUDE.md`.
